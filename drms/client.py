@@ -248,7 +248,7 @@ class ExportRequest:
         - 3 = Request too large for automatic requests.
         - 4 = Request not formed correctly, bad series, etc.
         - 5 = Request old, results requested after data timed out.
-        - 1 = The backend process was terminated (typically when the user cancels the export request).
+        - -1 = The backend process was terminated (typically when the user cancels the export request).
 
         Reference
         ---------
@@ -476,6 +476,7 @@ class ExportRequest:
 
             if self.has_finished():
                 self._raise_on_error()
+                logger.info(f"Export request finished. [id={idstr}, status={self._status}]")
                 return True
             if self._status == self._status_code_notfound:
                 # Raise exception, if no retries are left.
