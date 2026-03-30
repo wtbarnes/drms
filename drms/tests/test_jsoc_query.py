@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 
 import drms
@@ -100,9 +101,20 @@ def test_query_invalid_series(jsoc_client):
     [
         "hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]",
         "hmi.M_720s[2011.04.14_00:30:00_TAI/6h@2h]",
+        "aia.lev1_euv_12s[2014-01-01T00:00:01Z/365d@1d][335]",
     ],
 )
 def test_query_hexadecimal_strings(query):
     # Exercise the part of client.py that deals with hexadecimal strings
     c = drms.Client()
-    c.query(query, key="**ALL**")
+    result = c.query(query, key=["T_REC", "QUALITY", "CRPIX1", "CRVAL1", "BUNIT"])
+    assert pd.api.types.is_integer_dtype(result["QUALITY"])
+
+
+def test_query_quality_hex_decimal_conversion():
+    c = drms.Client()
+    keywords = pd.DataFrame({"is_integer": [True], "is_numeric": [True]}, index=["QUALITY"])
+    df = pd.DataFrame({"QUALITY": pd.Series(["0x00000000", "0x0000000A", "0X000000FF"], dtype="string")})
+    c._convert_numeric_keywords(keywords, df)
+    assert df["QUALITY"].tolist() == [0, 10, 255]
+    assert pd.api.types.is_integer_dtype(df["QUALITY"])
