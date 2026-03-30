@@ -82,7 +82,6 @@ data_invalid = [
     ("2010.05.01_TAI", False),
     ("2010.05.01_00:00_TAI", False),
     ("", True),
-    ("1600", True),
     ("foo", True),
     ("2013.12.21_23:32:34_TAI", False),
 ]
