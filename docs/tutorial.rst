@@ -91,7 +91,7 @@ JSOC time strings can be converted to a naive `~datetime.datetime` representatio
     1   2016-04-01 06:00:00
     2   2016-04-01 12:00:00
     3   2016-04-01 18:00:00
-    Name: T_REC, dtype: datetime64[ns]
+    Name: T_REC, dtype: datetime64[us]
 
 For most of the HMI and MDI data sets, the `TAI <https://en.wikipedia.org/wiki/International_Atomic_Time>`__ time standard is used which, in contrast to `UTC <https://en.wikipedia.org/wiki/Coordinated_Universal_Time>`__, does not make use of any leap seconds.
 The TAI standard is currently not supported by the Python standard libraries.
@@ -210,7 +210,7 @@ Note that :meth:`drms.client.Client.export` performs an ``url_quick`` / ``as-is`
     1    /SUM41/D803708361/S00008/Dopplergram.fits
     2    /SUM71/D803720859/S00008/Dopplergram.fits
     3    /SUM70/D803730119/S00008/Dopplergram.fits
-    Name: filename, dtype: object
+    Name: filename, dtype: str
 
 Download URLs can now be generated using the :attr:`drms.client.ExportRequest.urls` attribute:
 
@@ -225,7 +225,7 @@ The following, for example, only downloads the first file of the request:
 
 .. code-block:: python
 
-    >>> export_request.download(out_dir, index=0)  # doctest: +REMOTE_DATA
+    >>> res = export_request.download(out_dir, index=0)  # doctest: +REMOTE_DATA
 
 Being a direct ``as-is`` export, there are no keyword data written to any FITS headers.
 If you need keyword data added to the headers, you have to use the ``fits`` export protocol instead, which is described below.

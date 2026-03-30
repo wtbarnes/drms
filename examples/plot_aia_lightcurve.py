@@ -40,9 +40,10 @@ keys = [
 print("Querying series info...")
 series_info = client.info("aia.lev1_euv_12s")
 series_info_lev1 = client.info("aia.lev1")
+linkinfo = series_info.keywords.linkinfo
+missing_linkinfo = linkinfo.isna()
 for key in keys:
-    linkinfo = series_info.keywords.loc[key].linkinfo
-    if linkinfo is not None and linkinfo.startswith("lev1->"):
+    if not missing_linkinfo.loc[key] and linkinfo.loc[key].startswith("lev1->"):
         note_str = series_info_lev1.keywords.loc[key].note
     else:
         note_str = series_info.keywords.loc[key].note
