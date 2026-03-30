@@ -109,3 +109,12 @@ def test_query_hexadecimal_strings(query):
     c = drms.Client()
     result = c.query(query, key=["T_REC", "QUALITY", "CRPIX1", "CRVAL1", "BUNIT"])
     assert pd.api.types.is_integer_dtype(result["QUALITY"])
+
+
+def test_query_quality_hex_decimal_conversion():
+    c = drms.Client()
+    keywords = pd.DataFrame({"is_integer": [True], "is_numeric": [True]}, index=["QUALITY"])
+    df = pd.DataFrame({"QUALITY": pd.Series(["0x00000000", "0x0000000A", "0X000000FF"], dtype="string")})
+    c._convert_numeric_keywords(keywords, df)
+    assert df["QUALITY"].tolist() == [0, 10, 255]
+    assert pd.api.types.is_integer_dtype(df["QUALITY"])

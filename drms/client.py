@@ -615,10 +615,9 @@ class Client:
     def __repr__(self):
         return f"<Client: {self._server.name}>"
 
-    def _convert_numeric_keywords(self, ds, kdf, *, skip_conversion=None):
-        si = self.info(ds)
-        int_keys = list(si.keywords[si.keywords.is_integer].index)
-        num_keys = list(si.keywords[si.keywords.is_numeric].index)
+    def _convert_numeric_keywords(self, keywords, kdf, *, skip_conversion=None):
+        int_keys = list(keywords[keywords.is_integer].index)
+        num_keys = list(keywords[keywords.is_numeric].index)
         num_keys += ["*recnum*", "*sunum*", "*size*"]
         if skip_conversion is None:
             skip_conversion = []
@@ -636,7 +635,7 @@ class Client:
                 idx = values.str.startswith(("0x", "0X"))
                 if idx.any():
                     kdf[k] = kdf[k].astype(object)
-                    kdf.loc[idx, k] = values[idx].apply(lambda x: int(x, base=16))
+                    kdf.loc[idx, k] = values[idx].apply(int, base=16)
             if k in num_keys:
                 kdf[k] = _pd_to_numeric_coerce(kdf[k])
 
@@ -1031,7 +1030,7 @@ class Client:
             else:
                 res_key = pd.DataFrame()
             if convert_numeric:
-                self._convert_numeric_keywords(ds, res_key, skip_conversion=skip_conversion)
+                self._convert_numeric_keywords(self.info(ds).keywords, res_key, skip_conversion=skip_conversion)
             res.append(res_key)
 
         if seg is not None:
